@@ -1,0 +1,28 @@
+
+services:
+  target:
+    image: nginx:alpine
+    container_name: lab-target
+    networks:
+      - security-lab
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  tester:
+    image: nicolaka/netshoot:latest
+    container_name: lab-tester
+    command: ["sleep", "infinity"]
+    networks:
+      - security-lab
+    depends_on:
+      - target
+    restart: unless-stopped
+
+networks:
+  security-lab:
+    name: security-lab
+    internal: true
